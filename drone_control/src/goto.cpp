@@ -13,27 +13,7 @@ class GoToFSM : public fsm::FSM {
 public:
     GoToFSM() : fsm::FSM({"ERROR", "FINISHED"}) {
 
-        this->blackboard_set<Drone>("drone", new Drone());
-
-        float takeoff_height = -2.5;
-        this->blackboard_set<float>("takeoff_height", takeoff_height);
-
-        Eigen::Vector3d target_base(2.0, -2.0, 0.0);
-        this->blackboard_set<Eigen::Vector3d>("target_base", target_base);
-
-        // Adding states
-        this->add_state("TAKEOFF", std::make_unique<TakeoffState>());
-        this->add_state("LANDING", std::make_unique<LandingState>());
-        this->add_state("GOTO", std::make_unique<GoToState>());
-
-        // Initial Takeoff transitions
-        this->add_transitions("TAKEOFF", {{"TAKEOFF COMPLETED", "GOTO"},{"SEG FAULT", "ERROR"}});
-
-        // GoTo transitions
-        this->add_transitions("GOTO", {{"ARRIVED AT POINT", "LANDING"},{"SEG FAULT", "ERROR"}});
-
-        // Landing transitions
-        this->add_transitions("LANDING", {{"LANDED", "FINISHED"},{"SEG FAULT", "ERROR"}});
+        
         
     }
 };
