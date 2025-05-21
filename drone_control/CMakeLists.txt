@@ -11,12 +11,14 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(fsm REQUIRED)
-find_package(cbr_drone_lib REQUIRED)
+find_package(drone_lib REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 
 include_directories(include)
+include_directories(${EIGEN3_INCLUDE_DIR})
+include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 #takeoff_landing
@@ -28,7 +30,7 @@ add_executable(takeoff_landing
 ament_target_dependencies(takeoff_landing
   rclcpp
   fsm
-  cbr_drone_lib
+  drone_lib
   Eigen3
 )
 
@@ -42,9 +44,13 @@ add_executable(goto
 ament_target_dependencies(goto
   rclcpp
   fsm
-  cbr_drone_lib
+  drone_lib
   Eigen3
 )
+
+target_link_libraries(takeoff_landing ${OpenCV_LIBS})
+
+target_link_libraries(goto ${OpenCV_LIBS})
 
 
 if(BUILD_TESTING)
@@ -57,6 +63,10 @@ install(
     takeoff_landing
     goto
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 ament_package()

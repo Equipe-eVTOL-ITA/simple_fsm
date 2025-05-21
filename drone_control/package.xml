@@ -11,7 +11,7 @@
 
   <depend>rclcpp</depend>
   <depend>fsm</depend>
-  <depend>cbr_drone_lib</depend>
+  <depend>drone_lib</depend>
   <depend>Eigen3</depend>
 
   <export>
