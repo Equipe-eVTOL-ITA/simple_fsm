@@ -10,6 +10,7 @@ public:
     void on_enter(fsm::Blackboard &blackboard) override {
         
     }
+
     std::string act(fsm::Blackboard &blackboard) override {
         (void) blackboard;
         
@@ -17,7 +18,6 @@ public:
     }
 
     void on_exit(fsm::Blackboard &blackboard) override {
-        //Publish base coordinates
         (void) blackboard;
         
     }
