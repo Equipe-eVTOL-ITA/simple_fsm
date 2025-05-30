@@ -1,5 +1,4 @@
 #include <Eigen/Eigen>
-#include <opencv2/highgui.hpp>
 #include "fsm/fsm.hpp"
 #include "drone/Drone.hpp"
 
@@ -21,7 +20,6 @@ public:
         
         drone->toOffboardSync();
         drone->armSync();
-        drone->setHomePosition(fictual_home);
                 
         pos = drone->getLocalPosition();
         initial_yaw = drone->getOrientation()[2];

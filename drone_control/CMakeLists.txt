@@ -18,7 +18,6 @@ find_package(Eigen3 REQUIRED)
 
 include_directories(include)
 include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 #takeoff_landing
@@ -48,9 +47,18 @@ ament_target_dependencies(goto
   Eigen3
 )
 
-target_link_libraries(takeoff_landing ${OpenCV_LIBS})
+# test_getters
 
-target_link_libraries(goto ${OpenCV_LIBS})
+add_executable(test_getters
+  src/test_getters.cpp
+)
+
+ament_target_dependencies(test_getters
+  rclcpp
+  fsm
+  drone_lib
+  Eigen3
+)
 
 
 if(BUILD_TESTING)
@@ -62,6 +70,7 @@ install(
   TARGETS
     takeoff_landing
     goto
+    test_getters
   DESTINATION lib/${PROJECT_NAME}
 )
 
