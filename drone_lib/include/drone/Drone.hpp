@@ -53,8 +53,9 @@ public:
 	DronePX4::ARMING_STATE getArmingState();
 
 	/*
-		Drone actions
+		Setters
 	*/
+	void log(const std::string& info);
 
 	void setOffboardControlMode(DronePX4::CONTROLLER_TYPE type);
 
@@ -72,9 +73,7 @@ public:
 
 	void setLocalVelocity(float vx, float vy, float vz, float yaw_rate = 0.0f);
 
-	void setHomePosition(const Eigen::Vector3d& home_position);
 
-	void log(const std::string& info);
 
 private:
 	/// Send command to PX4
@@ -102,35 +101,33 @@ private:
 	void destroy();
 
 	// Orchestration
+	std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> exec_;
+	rclcpp::Node::SharedPtr px4_node_;
 	std::thread spin_thread_;
 
-	std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> exec_;
+	// Subscribers
 	
-	rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_sub_;
-			
 	rclcpp::Subscription<px4_msgs::msg::VehicleOdometry>::SharedPtr vehicle_odometry_sub_;
 	
+	rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_sub_;
+	
+
+	// Publishers
+
 	rclcpp::Publisher<px4_msgs::msg::VehicleCommand>::SharedPtr vehicle_command_pub_;
 		
 	rclcpp::Publisher<px4_msgs::msg::OffboardControlMode>::SharedPtr vehicle_offboard_control_mode_pub_;
 
 	rclcpp::Publisher<px4_msgs::msg::TrajectorySetpoint>::SharedPtr vehicle_trajectory_setpoint_pub_;
-		
+
+	
+	// LAB 7 - POSITION PUBLISHER	
 	rclcpp::Publisher<custom_msgs::msg::Position>::SharedPtr position_pub_;
 	rclcpp::TimerBase::SharedPtr position_timer_;
 
 
-	// Service clients
-	rclcpp::Node::SharedPtr px4_node_;
-	DronePX4::ARMING_STATE arming_state_{DronePX4::ARMING_STATE::DISARMED};
-
-	// Home position
-	Eigen::Vector3d home_position_{0.0, 0.0, 0.0};
-
-	// Target system configuration
-	int target_system_{1};
-
-	// Telemetry data
+	// VARIAVEIS PRIVADAS DOS SUBSCRIBERS
+	
 	std::chrono::time_point<std::chrono::high_resolution_clock> odom_timestamp_;
 	float current_pos_x_{0.0f};
 	float current_pos_y_{0.0f};
@@ -142,8 +139,11 @@ private:
 	float roll_{0.0f};
 	float pitch_{0.0f};
 	float yaw_{0.0f};
+	DronePX4::ARMING_STATE arming_state_{DronePX4::ARMING_STATE::DISARMED};
+
 
 	// PX4 communication parameters
+	int target_system_{1};
 	uint8_t target_component_{1};
 	uint8_t source_system_{255};
 	uint8_t source_component_{0};
