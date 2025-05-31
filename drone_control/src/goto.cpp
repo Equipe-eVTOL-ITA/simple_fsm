@@ -13,7 +13,6 @@ class GoToFSM : public fsm::FSM {
 public:
     GoToFSM() : fsm::FSM({"ERROR", "FINISHED"}) {
         this->blackboard_set<Drone>("drone", new Drone());
-        Drone* drone = blackboard_get<Drone>("drone");
 
         Eigen::Vector3d target_base(2.0, -2.0, 0.0);
         this->blackboard_set<Eigen::Vector3d>("target_base", target_base);

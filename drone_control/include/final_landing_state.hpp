@@ -11,7 +11,6 @@ public:
         if (drone == nullptr) return;
         drone->log("Hovering over home, initiating descent.");
 
-        float takeoff_height = *blackboard.get<float>("takeoff_height");
         initial_yaw = *blackboard.get<float>("initial_yaw");
         pos = drone->getLocalPosition();
         max_velocity = 0.8;

@@ -12,7 +12,6 @@ class TakeoffLandingFSM : public fsm::FSM {
 public:
     TakeoffLandingFSM() : fsm::FSM({"ERROR", "FINISHED"}) {
         this->blackboard_set<Drone>("drone", new Drone()); //blackboard aceita smart pointers?
-        Drone* drone = blackboard_get<Drone>("drone");
 
         float takeoff_height = -2.5;
         this->blackboard_set<float>("takeoff_height", takeoff_height);
