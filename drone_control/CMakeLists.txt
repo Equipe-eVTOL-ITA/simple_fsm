@@ -20,6 +20,18 @@ include_directories(include)
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+#land_on_bases
+
+add_executable(land_on_bases
+  src/land_on_bases.cpp)
+
+ament_target_dependencies(land_on_bases
+  rclcpp
+  fsm
+  drone_lib
+  Eigen3
+)
+
 
 #takeoff_landing
 
@@ -60,7 +72,9 @@ endif()
 
 install(
   TARGETS
-    
+    land_on_bases
+    takeoff_landing
+    goto
   DESTINATION lib/${PROJECT_NAME}
 )
 

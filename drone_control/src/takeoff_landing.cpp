@@ -11,30 +11,19 @@
 class TakeoffLandingFSM : public fsm::FSM {
 public:
     TakeoffLandingFSM() : fsm::FSM({"ERROR", "FINISHED"}) {
-        Drone* drone = new Drone();
+        this->blackboard_set<Drone>("drone", new Drone()); //blackboard aceita smart pointers?
+        Drone* drone = blackboard_get<Drone>("drone");
 
-        this->blackboard_set<Drone>("drone", drone);
         float takeoff_height = -2.5;
         this->blackboard_set<float>("takeoff_height", takeoff_height);
-
-        this->add_state("TAKEOFF", std::make_shared<TakeoffState>());
-        this->add_state("LANDING", std::make_shared<LandingState>());
         
-        this->add_transition("TAKEOFF",
-                            {{"TAKEOFF COMPLETED", "LANDING"},
-                            {"SEG FAULT", "ERROR"}
-                            }
-        );
-        
-        this->add_transition("LANDING",
-                            {{"LANDED", "FINISHED"}
-                        {"SEG FAULT", "ERROR"}
-                            }
-        );
-    }   
+        this->add_state("TAKEOFF", std::make_unique<TakeoffState>());
+        this->add_state("LANDING", std::make_unique<LandingState>());
 
+        this->add_transitions("TAKEOFF", {{"TAKEOFF COMPLETED", "LANDING"}, {"SEG FAULT", "ERROR"}});
+        this->add_transitions("LANDING", {{"LANDED", "FINISHED"}, {"SEG FAULT", "ERROR"}});
+    }
 };
-
 class NodeFSM : public rclcpp::Node {
 public:
     NodeFSM() : rclcpp::Node("takeoff_landing_node"), my_fsm() {
