@@ -37,6 +37,8 @@ public:
 
     void on_exit(fsm::Blackboard &blackboard) override {
         (void) blackboard;
+        int counter = *blackboard.get<int>("counter");
+        drone->log("Landed at base number "+ std::to_string(counter) + ". Position: " + std::to_string(pos[0]) + ", "+ std::to_string(pos[1]) + ", "+ std::to_string(pos[2]) + ".");
     }
 
 private:

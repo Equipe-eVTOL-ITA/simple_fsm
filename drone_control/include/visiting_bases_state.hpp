@@ -36,7 +36,7 @@ public:
             return "ON BASE";
         }
         
-        drone->log("POSITION: " + std::to_string(pos[0]) + ", "+ std::to_string(pos[1]) + ", "+ std::to_string(pos[2]) + ".");
+        //drone->log("POSITION: " + std::to_string(pos[0]) + ", "+ std::to_string(pos[1]) + ", "+ std::to_string(pos[2]) + ".");
         goal_diff = goal - pos;
         little_goal = pos + (goal_diff.norm() > max_velocity ? goal_diff.normalized() * max_velocity : goal_diff);
 

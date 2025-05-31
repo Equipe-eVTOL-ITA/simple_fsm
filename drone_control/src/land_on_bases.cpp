@@ -6,6 +6,7 @@
 #include "visiting_bases_state.hpp"
 #include "going_home_state.hpp"
 #include "initial_takeoff_state.hpp"
+#include "final_landing_state.hpp"
 
 #include <rclcpp/rclcpp.hpp>
 #include <memory>
@@ -40,12 +41,14 @@ public:
         this->add_state("LANDING", std::make_unique<LandingState>());
         this->add_state("VISITING BASES", std::make_unique<VisitBasesState>());
         this->add_state("RETURN HOME", std::make_unique<ReturnHomeState>());
+        this->add_state("FINAL LANDING", std::make_unique<FinalLandingState>());
 
         this->add_transitions("INITIAL TAKEOFF", {{"TAKEOFF COMPLETED", "VISITING BASES"}, {"SEG FAULT", "ERROR"}});
         this->add_transitions("VISITING BASES", {{"ON BASE", "LANDING"}, {"SEG FAULT", "ERROR"}});
         this->add_transitions("TAKEOFF", {{"NO BASES LEFT", "RETURN HOME"}, {"BASES LEFT", "VISITING BASES"}, {"SEG FAULT", "ERROR"}});
         this->add_transitions("LANDING", {{"LANDED", "TAKEOFF"}, {"SEG FAULT", "ERROR"}});
-        this->add_transitions("RETURN HOME", {{"AT HOME", "FINISHED"}, {"SEG FAULT", "ERROR"}});
+        this->add_transitions("RETURN HOME", {{"OVER HOME", "FINAL LANDING"}, {"SEG FAULT", "ERROR"}});
+        this->add_transitions("FINAL LANDING", {{"AT HOME", "FINISHED"}, {"SEG FALT", "ERROR"}});
         
     }
 };
