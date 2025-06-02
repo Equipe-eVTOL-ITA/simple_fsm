@@ -10,7 +10,7 @@ public:
 
         drone = blackboard.get<Drone>("drone");
         if (drone == nullptr) return;
-        drone->log("STATE: TAKEOFF");
+        // drone->log("STATE: TAKEOFF");
 
         const Eigen::Vector3d fictual_home(0.0, 0.0, 0.0);
         print_counter = 0;
@@ -18,8 +18,8 @@ public:
         float takeoff_height = *blackboard.get<float>("takeoff_height");
         max_velocity = 0.8;
         
-        drone->toOffboardSync();
-        drone->armSync();
+        // drone->toOffboardSync();
+        // drone->armSync();
                 
         pos = drone->getLocalPosition();
         initial_yaw = drone->getOrientation()[2];
@@ -30,7 +30,8 @@ public:
     std::string act(fsm::Blackboard &blackboard) override {
         (void)blackboard;
         
-        pos  = drone->getLocalPosition();
+        // pos  = drone->getLocalPosition();
+        pos = Eigen::Vector3d::Zero();
 
         if (print_counter%10==0){
             drone->log("Pos: {" + std::to_string(pos[0]) + ", " 
@@ -42,10 +43,10 @@ public:
             return "TAKEOFF COMPLETED";
         }
 
-        Eigen::Vector3d diff = goal - pos;
-        Eigen::Vector3d little_goal = pos + (diff.norm() > max_velocity ? diff.normalized() * max_velocity : diff);
+        // Eigen::Vector3d diff = goal - pos;
+        // Eigen::Vector3d little_goal = pos + (diff.norm() > max_velocity ? diff.normalized() * max_velocity : diff);
         
-        drone->setLocalPosition(little_goal[0], little_goal[1], little_goal[2], initial_yaw);
+        // drone->setLocalPosition(little_goal[0], little_goal[1], little_goal[2], initial_yaw);
         
         return "";
     }

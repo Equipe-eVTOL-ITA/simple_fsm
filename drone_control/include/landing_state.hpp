@@ -10,13 +10,13 @@ public:
     void on_enter(fsm::Blackboard &blackboard) override {
         drone = blackboard.get<Drone>("drone");
         if (drone == nullptr) return;
-        drone->log("STATE: LANDING");
+        // drone->log("STATE: LANDING");
 
-        pos = drone->getLocalPosition();
+        // pos = drone->getLocalPosition();
 
         start_time_ = std::chrono::steady_clock::now();
 
-        drone->log("Descending for 8s.");
+        // drone->log("Descending for 8s.");
     }
     std::string act(fsm::Blackboard &blackboard) override {
         (void) blackboard;
@@ -28,15 +28,15 @@ public:
             return "LANDED";
         }
 
-        drone->setLocalVelocity(0.0, 0.0, 0.5, 0.0);
+        // drone->setLocalVelocity(0.0, 0.0, 0.5, 0.0);
         return "";
     }
 
     void on_exit(fsm::Blackboard &blackboard) override {
         (void) blackboard;
 
-        drone->log("Disarming.");
-        drone->disarmSync();
+        // drone->log("Disarming.");
+        // drone->disarmSync();
     }
 
 private:

@@ -14,7 +14,6 @@ public:
 
         this->blackboard_set<Drone>("drone", new Drone());
         Drone* drone = blackboard_get<Drone>("drone");
-        drone->log("Bla");
 
         float takeoff_height = -2.5;
         this->blackboard_set<float>("takeoff_height", takeoff_height);
