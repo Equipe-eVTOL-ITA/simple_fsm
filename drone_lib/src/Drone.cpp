@@ -311,7 +311,6 @@ void Drone::toOffboardSync() {
 }
 
 
-
 // LAB 6 - FUNÇÕES DE SYNC
 
 void Drone::armSync() {
@@ -352,4 +351,13 @@ void Drone::setLocalVelocity(float vx, float vy, float vz, float yaw_rate) {
 	msg.acceleration[2] = std::numeric_limits<float>::quiet_NaN();
 
 	this->vehicle_trajectory_setpoint_pub_->publish(msg);
+}
+
+// LAB 6 - GETTER DE VELOCIDADE
+Eigen::Vector3d Drone::getLocalVelocity() {
+	return Eigen::Vector3d({
+		this->current_vel_x_,
+		this->current_vel_y_,
+		this->current_vel_z_
+	});
 }

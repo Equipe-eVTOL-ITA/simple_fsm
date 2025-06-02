@@ -33,9 +33,7 @@ public:
     }
 
     void on_exit(fsm::Blackboard &blackboard) override {
-        //Publish base coordinates
         (void) blackboard;
-        pos = drone->getLocalPosition();
 
         drone->log("Disarming.");
         drone->disarmSync();

@@ -71,7 +71,9 @@ public:
 	void armSync();
 	void disarmSync();
 
+	// LAB 6 - VELOCITY SETTER AND GETTER
 	void setLocalVelocity(float vx, float vy, float vz, float yaw_rate = 0.0f);
+	Eigen::Vector3d getLocalVelocity();
 
 
 
