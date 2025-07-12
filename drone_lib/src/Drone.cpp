@@ -7,17 +7,7 @@
 #include "tf2/utils.h"
 
 
-Drone::Drone() {
-	// Criar executor e nó
-	this->exec_ = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-	this->px4_node_ = std::make_shared<rclcpp::Node>("Drone");
-	this->exec_->add_node(px4_node_);
-	
-	// Start the executor in a separate thread
-	this->spin_thread_ = std::thread([this]() {
-		this->exec_->spin();
-	});
-
+Drone::Drone() : Node("Drone") {
 
 	// QoS
 	rclcpp::QoS px4_qos(5);
@@ -26,7 +16,7 @@ Drone::Drone() {
 
 
 	// Subscriber de Odometria
-	this->vehicle_odometry_sub_ = this->px4_node_->create_subscription<px4_msgs::msg::VehicleOdometry>(
+	this->vehicle_odometry_sub_ = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
 		"/fmu/out/vehicle_odometry",
 		px4_qos,
 		[this](px4_msgs::msg::VehicleOdometry::ConstSharedPtr msg) {
@@ -62,7 +52,7 @@ Drone::Drone() {
 
 
 	// Subscriber de VehicleStatus
-	this->vehicle_status_sub_ = this->px4_node_->create_subscription<px4_msgs::msg::VehicleStatus>(
+	this->vehicle_status_sub_ = this->create_subscription<px4_msgs::msg::VehicleStatus>(
 		"/fmu/out/vehicle_status",
 		px4_qos,
 		[this](px4_msgs::msg::VehicleStatus::ConstSharedPtr msg) {
@@ -82,23 +72,23 @@ Drone::Drone() {
 
 
 	// PUBLISHERS
-	this->vehicle_command_pub_ = this->px4_node_->create_publisher<px4_msgs::msg::VehicleCommand>(
+	this->vehicle_command_pub_ = this->create_publisher<px4_msgs::msg::VehicleCommand>(
 		"/fmu/in/vehicle_command", px4_qos);
 
-	this->vehicle_offboard_control_mode_pub_ = this->px4_node_->create_publisher<px4_msgs::msg::OffboardControlMode>(
+	this->vehicle_offboard_control_mode_pub_ = this->create_publisher<px4_msgs::msg::OffboardControlMode>(
 		"/fmu/in/offboard_control_mode", px4_qos);
 		
-	this->vehicle_trajectory_setpoint_pub_ = this->px4_node_->create_publisher<px4_msgs::msg::TrajectorySetpoint>(
+	this->vehicle_trajectory_setpoint_pub_ = this->create_publisher<px4_msgs::msg::TrajectorySetpoint>(
 		"/fmu/in/trajectory_setpoint", px4_qos);
 
 
 	// LAB 7 - POSITION PUBLISHER
 	rclcpp::QoS custom_qos(10);
 
-	this->position_pub_ = this->px4_node_->create_publisher<custom_msgs::msg::Position>(
+	this->position_pub_ = this->create_publisher<custom_msgs::msg::Position>(
 		"/position", custom_qos);
 
-	this->position_timer_ = this->px4_node_->create_wall_timer(
+	this->position_timer_ = this->create_wall_timer(
 		std::chrono::milliseconds(50),  // 20 Hz
 		[this]() {
 			custom_msgs::msg::Position msg;
@@ -116,24 +106,6 @@ Drone::Drone() {
 			this->position_pub_->publish(msg);
 		});
 }
-
-Drone::~Drone() {
-	this->destroy();
-}
-
-void Drone::destroy() {
-	if (this->exec_) {
-		this->exec_->cancel();
-		// Give some time for graceful shutdown
-		rclcpp::sleep_for(std::chrono::milliseconds(100));
-		this->exec_ = nullptr;
-		rclcpp::shutdown();
-		if (this->spin_thread_.joinable()) {
-			this->spin_thread_.join();
-		}
-	}
-}
-
 
 // GETTERS DE ODOMETRIA
 
@@ -165,7 +137,7 @@ DronePX4::ARMING_STATE Drone::getArmingState() {
 
 // SETTER SIMPLES PARA LOG
 void Drone::log(const std::string &info) {
-	RCLCPP_INFO(this->px4_node_->get_logger(), info.c_str());
+	RCLCPP_INFO(this->get_logger(), info.c_str());
 }
 
 // SETTERS DE VEHICLE COMMAND
@@ -179,7 +151,7 @@ void Drone::sendCommand(
 	float param7){
 		
 	px4_msgs::msg::VehicleCommand msg;
-	msg.timestamp = this->px4_node_->get_clock()->now().nanoseconds() / 1000.0;
+	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000.0;
 	msg.command = command;
 
 	msg.param1 = param1;
@@ -244,7 +216,7 @@ void Drone::disarm() {
 
 void Drone::setOffboardControlMode(DronePX4::CONTROLLER_TYPE type) {
 	px4_msgs::msg::OffboardControlMode msg;
-	msg.timestamp = this->px4_node_->get_clock()->now().nanoseconds() / 1000;
+	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 
 	msg.position = false;
 	msg.velocity = false;
@@ -260,7 +232,7 @@ void Drone::setOffboardControlMode(DronePX4::CONTROLLER_TYPE type) {
 	} else if (type == DronePX4::CONTROLLER_TYPE::BODY_RATES) {
 		msg.body_rate = true;
 	} else {
-		RCLCPP_WARN(this->px4_node_->get_logger(), "No controller is defined");
+		RCLCPP_WARN(this->get_logger(), "No controller is defined");
 	}
 
 	this->vehicle_offboard_control_mode_pub_->publish(msg);
@@ -273,7 +245,7 @@ void Drone::setLocalPosition(float x, float y, float z, float yaw) {
 
 	px4_msgs::msg::TrajectorySetpoint msg;
 
-	msg.timestamp = this->px4_node_->get_clock()->now().nanoseconds() / 1000;
+	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 
 	msg.position[0] = x;
 	msg.position[1] = y;
@@ -334,7 +306,7 @@ void Drone::setLocalVelocity(float vx, float vy, float vz, float yaw_rate) {
 	
 	px4_msgs::msg::TrajectorySetpoint msg;
 
-	msg.timestamp = this->px4_node_->get_clock()->now().nanoseconds() / 1000;
+	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
 
 	msg.position[0] = std::numeric_limits<float>::quiet_NaN();
 	msg.position[1] = std::numeric_limits<float>::quiet_NaN();

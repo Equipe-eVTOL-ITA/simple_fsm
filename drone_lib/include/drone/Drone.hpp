@@ -4,7 +4,6 @@
 #include <chrono>
 #include <memory>
 #include <string>
-#include <thread>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -34,12 +33,10 @@ enum CONTROLLER_TYPE
 };
 }
 
-class Drone
+class Drone : public rclcpp::Node
 {
 public:
 	Drone();
-	~Drone();
-
 
 	/*
 		Getters
@@ -99,13 +96,6 @@ private:
 		float param1 = 0.0f, float param2 = 0.0f, float param3 = 0.0f,
 		float param4 = 0.0f, float param5 = 0.0f, float param6 = 0.0f,
 		float param7 = 0.0f);
-
-	void destroy();
-
-	// Orchestration
-	std::shared_ptr<rclcpp::executors::MultiThreadedExecutor> exec_;
-	rclcpp::Node::SharedPtr px4_node_;
-	std::thread spin_thread_;
 
 	// Subscribers
 	

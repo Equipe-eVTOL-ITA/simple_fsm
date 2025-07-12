@@ -11,9 +11,9 @@
 
 class GoToFSM : public fsm::FSM {
 public:
-    GoToFSM() : fsm::FSM({"ERROR", "FINISHED"}) {
+    GoToFSM(std::shared_ptr<Drone> drone) : fsm::FSM({"ERROR", "FINISHED"}) {
 
-        this->blackboard_set<Drone>("drone", new Drone());
+        this->blackboard_set<std::shared_ptr<Drone>>("drone", drone);
 
         float takeoff_height = -2.5;
         this->blackboard_set<float>("takeoff_height", takeoff_height);
@@ -40,30 +40,42 @@ public:
 
 class NodeFSM : public rclcpp::Node {
 public:
-    NodeFSM() : rclcpp::Node("goto_node"), my_fsm() {
+    NodeFSM(std::shared_ptr<Drone> drone) : rclcpp::Node("goto_node"), drone_node_(drone) {
+
+        fsm_ = std::make_unique<GoToFSM>(drone_node_);
+
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(50),  // Run at approximately 20 Hz
             std::bind(&NodeFSM::executeFSM, this));
     }
 
     void executeFSM() {
-        if (rclcpp::ok() && !my_fsm.is_finished()) {
-            my_fsm.execute();
+        if (rclcpp::ok() && !fsm_->is_finished()) {
+            fsm_->execute();
         } else {
             rclcpp::shutdown();
         }
     }
 
 private:
-    GoToFSM my_fsm;
+    std::shared_ptr<Drone> drone_node_;
+    std::unique_ptr<GoToFSM> fsm_;
     rclcpp::TimerBase::SharedPtr timer_;
 };
 
 int main(int argc, const char *argv[]) {
     rclcpp::init(argc, argv);
 
-    auto my_node = std::make_shared<NodeFSM>();
-    rclcpp::spin(my_node);
+    rclcpp::executors::MultiThreadedExecutor executor;
+    
+    auto drone = std::make_shared<Drone>();
+    auto fsm_node = std::make_shared<NodeFSM>(drone);
+    
+    executor.add_node(drone);
+    executor.add_node(fsm_node);
 
+    executor.spin();
+    
+    rclcpp::shutdown();
     return 0;
 }

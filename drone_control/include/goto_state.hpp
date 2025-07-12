@@ -8,7 +8,7 @@ public:
 
     void on_enter(fsm::Blackboard &blackboard) override {
 
-        drone = blackboard.get<Drone>("drone");
+        drone = *blackboard.get<std::shared_ptr<Drone>>("drone");
         if (drone == nullptr) return;
         drone->log("STATE: GoToState");
 
@@ -43,7 +43,7 @@ public:
 
 private:
     Eigen::Vector3d pos, goal;
-    Drone* drone;
+    std::shared_ptr<Drone> drone;
     double max_velocity; // m/s
     float yaw;
 };
