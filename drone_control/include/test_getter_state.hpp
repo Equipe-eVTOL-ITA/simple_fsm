@@ -8,7 +8,7 @@ public:
 
     void on_enter(fsm::Blackboard &blackboard) override {
 
-        drone = blackboard.get<Drone>("drone");
+        drone = *blackboard.get<std::shared_ptr<Drone>>("drone");
         if (drone == nullptr) return;
         drone->log("STATE: TEST GETTER");
 
@@ -54,6 +54,6 @@ public:
     }
 
 private:
-    Drone* drone;
+    std::shared_ptr<Drone> drone;
     std::chrono::time_point<std::chrono::high_resolution_clock> initial_time;
 };
